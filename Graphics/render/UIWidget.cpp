@@ -1,6 +1,7 @@
 #include "UIWidget.h"
 #include "GUIRender.h"
 #include <res/TexPool.h>
+#include <PhBase/PhBase.h>
 
 namespace ph
 {

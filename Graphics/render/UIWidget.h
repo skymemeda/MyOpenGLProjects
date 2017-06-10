@@ -5,6 +5,7 @@
 #include <memory>
 #include <algorithm>
 #include <render/glypher.h>
+#include <phbase/phbase.h>
 
 namespace ph
 {

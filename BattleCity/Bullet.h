@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "GameDef.h"
 #include "TankObjectBase.h"
 struct speed
 {

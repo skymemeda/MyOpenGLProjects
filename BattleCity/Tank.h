@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "TypeDef.h"
+#include "GameDef.h"
 #include <string>
 #include "TankObjectBase.h"
 namespace tc

@@ -6,3 +6,4 @@
 /Graphics/*.user
 /PhBase/*.user
 /PhBase/Debug/*.pdb
+/BattleCity/Debug/*.log

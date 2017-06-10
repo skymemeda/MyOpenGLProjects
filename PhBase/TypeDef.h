@@ -23,10 +23,12 @@ namespace ph
 		{
 			x = y = 0;
 		}
-		point(T _x, T _y) 
+		point(T _x, T _y)
 		{
-			x = _x; y = _y;
+			x = _x;
+			y = _y;
 		}
+
 		void set(T _x, T _y)
 		{
 			x = _x; y = _y;
@@ -56,21 +58,40 @@ namespace ph
 	template < class T>
 	struct rect
 	{
-		T left; T right;
-		T bottom; T top;
+		T left, right;
+		T bottom, top;
 		rect()
 		{
 			left = right = bottom = top = 0;
 		}
-		rect(T _l, T _r, T _b, T _t ) :( left)_l, (right)_r, ( bottom)_b, ( top)_t
-		{}
-		void set(T _l, T _r, T _b, T _t)
+		rect(T l, T r, T b, T t)
 		{
-			left = _l;
-			right = _r;
-			bottom = _b;
-			top = _t;
+			left = l; right = r; bottom = b; top = t;
 		}
+		void set(T _left, T _right, T _bottom, T _top)
+		{
+			left = _left; right = _right; top = _top; bottom = _bottom;
+		}
+
+		bool operator==(const rect<T>& _rc)const
+		{
+			return (left == _rc.left&& right == _rc.right && bottom == _rc.bottom && top == _rc.top);
+		}
+
+		// 如果没有相交，返回false
+		bool clip(rect& _other, rect& _result) const
+		{
+			_result.left = this->left > _other.left ? this->left : _other.left;
+			_result.right = this->right < _other.right ? this->right : _other.right;
+			_result.bottom = this->bottom > _other.bottom ? this->bottom : _other.bottom;
+			_result.top = this->top < _other.top ? this->top : _other.top;
+			if (_result.bottom >= _result.top || _result.right <= _result.left)
+			{
+				return false;
+			}
+			return true;
+		}
+
 		bool hit_test(rect<T>& _rc)
 		{
 			if (left >= _rc.right) return false;
@@ -94,6 +115,15 @@ namespace ph
 			if (left <= _rc.left) return true;
 			if (right >= _rc.right) return true;
 			return false;
+		}
+
+		bool hit(const point<T>& _pt) const
+		{
+			if (_pt.x < this->left || _pt.x > this->right || _pt.y < this->bottom || _pt.y > this->top)
+			{
+				return false;
+			}
+			return true;
 		}
 	};
 
@@ -154,13 +184,6 @@ namespace ph
 		{
 			x = _x; y = _y;
 		}
-	};
-	enum move_type
-	{
-		move_left = 0,
-		move_right,
-		move_down,
-		move_up
 	};
 
 }
