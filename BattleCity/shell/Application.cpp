@@ -9,22 +9,15 @@
 #include <render/GUIRender.h>
 #include <render/UIWidget.h>
 #include <render/Glypher.h>
-
-typedef ph::UIWidget Widget;
+#include "GameManager.h"
 typedef ph::GUIRender Render;
-typedef ph::GDIRenderRectExt RRC;
-typedef ph::TexOGLRef Texture;
-
-Widget  tankWidget;
 Render* render;
-Texture gTex;
-
-
+GameManager *gameManager = nullptr;
 
 Application::Application()
 {    
-}
-
+} 
+ 
 Application::~Application()
 {    
 }
@@ -45,30 +38,28 @@ void Application::Start(void* _hwnd)
 	arch->Init(rootdir.c_str());
 	ph::TexPool::InitTexPool(arch);
 
-	/*script::GetScriptEngine()->Init();
-	uiv2::regist_to_script();
-	*/
 	render = ph::GUIRender::GetInstance(arch);
-
-	gTex = ph::TexPool::Get("system/texture/axe.png");
+	GameManager::initGameManager(render);
+	gameManager = new GameManager();
 }
 
 void Application::OnResize( int _w, int _h )
 {
-    if( _w < 4)
+    if( _w < 2)
     {
-        _w = 4;
+        _w = 2;
     }
-    if( _h < 4)
+    if( _h < 2)
     {
-        _h = 4;
+        _h = 2;
     }
 
-	_w = (_w >> 2) << 2;
-	_h = (_h >> 2) << 2;
+	_w = (_w >> 1) << 1;
+	_h = (_h >> 1) << 1;
 
 	view->Resize(_w, _h);
 	ph::GUIRender::GUIViewport(_w, _h);
+	gameManager->update();
 }
 
 void Application::End()
@@ -84,70 +75,15 @@ void Application::OnRender(unsigned long _tick)
 {
 	view->Begin(); __gl_check_error__
 	render->Begin();
-	render->Draw(&tankWidget);
+	gameManager->draw();
     view->End();
 }
 
 void Application::OnKeyEvent( unsigned char _key, eKeyEvent _event )
 {
-	ph::UIWidget::DefScissor(0, 1024, 0, 1024);
 	if( _event == eKeyDown )
 	{
-		RRC rrc;
-		rrc.MtcXMin = 0.0f; rrc.MtcXMax = 1.0f; rrc.MtcYMin = 0.0f; rrc.MtcYMax = 1.0f;
-		tankWidget.Begin();
-		rrc.Color = 0xffffffff; rrc.Gray = 0;
-		rrc.PosXMin = 0; rrc.PosXMax = 64; rrc.PosYMin = 0.0f; rrc.PosYMax = 64;
-
-		ph::rect<float> tc;
-		tc.bottom = 0.0f; tc.top = 32.0f;
-		
-		switch( _key )
-		{
-			case 'W':
-			{
-				tc.left = 64.0f; tc.right = 96.0f;
-				break;
-			}
-			case 'S':
-			{
-				tc.left = 96.0f; tc.right = 128.0f;
-				break;
-			}
-			case 'A':
-			{
-				tc.left = 0.0f; tc.right = 32.0f;
-				break;
-			}
-			case 'D':
-			{
-				tc.left = 32.0f; tc.right = 64.0f;
-				break;
-			}
-			default :
-			break;
-		}
-
-		rrc.TcXMin = tc.left / 205.0f;
-		rrc.TcXMax = tc.right / 205.0f;
-		rrc.TcYMin = tc.bottom / 115.0f;
-		rrc.TcYMax = tc.top / 115.0f;
-		rrc.Color = 0xffffffff;
-
-		tankWidget.Build(rrc, gTex, nullptr, 0);
-
-		char16_t message[] = u"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789中国智造，慧及全球。";
-
-		ph::UIText text;
-		text.x = 0;
-		text.y = 0;
-		text.size = 24;
-		text.length = sizeof(message) / sizeof(char16_t) - 1;
-		text.text = message;
-		text.color = 0xff0000ff;
-		text.charGap = 0.0f;
-		tankWidget.Build(text, 1);
-		tankWidget.End();
+		gameManager->keyPressed(_key);
 	}
 }
 
